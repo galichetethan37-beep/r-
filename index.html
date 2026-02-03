@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Réservations Colo Vacances</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.8rem 1rem;
+            border: 2px solid white;
+            border-radius: 10px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+        }
+        
+        .reservations-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .reservation-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #667eea;
+        }
+        
+        .reservation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .reservation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .child-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2d3748;
+        }
+        
+        .reservation-id {
+            font-size: 0.75rem;
+            color: #999;
+            font-family: monospace;
+        }
+        
+        .reservation-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .dates-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .date-badge {
+            background: #667eea;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .timestamp {
+            color: #999;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+        
+        .delete-btn {
+            background: #f56565;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            background: #e53e3e;
+            transform: scale(1.05);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-title {
+            font-size: 2rem;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-text {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .reservation-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎿 Tableau de bord Admin</h1>
+            <p style="color: #666;">Gestion des réservations - Colo Vacances Février 2026</p>
+        </header>
+        
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalReservations">-</div>
+                <div class="stat-label">Réservations totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalChildren">-</div>
+                <div class="stat-label">Enfants inscrits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayReservations">-</div>
+                <div class="stat-label">Aujourd'hui</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <input type="text" class="search-box" id="searchBox" placeholder="🔍 Rechercher par nom, email ou téléphone...">
+            <button class="btn btn-primary" onclick="loadReservations()">🔄 Actualiser</button>
+            <button class="btn btn-danger" onclick="exportCSV()">📥 Exporter CSV</button>
+        </div>
+        
+        <div id="reservationsContainer">
+            <div class="loading">Chargement des réservations...</div>
+        </div>
+    </div>
+    
+    <script>
+        let reservations = [];
+        
+        // Charger les réservations au démarrage
+        window.addEventListener('load', () => {
+            loadReservations();
+        });
+        
+        // Recherche en temps réel
+        document.getElementById('searchBox').addEventListener('input', (e) => {
+            const search = e.target.value.toLowerCase();
+            displayReservations(reservations.filter(r => {
+                return r.childFirstName.toLowerCase().includes(search) ||
+                       r.childLastName.toLowerCase().includes(search) ||
+                       r.parentName.toLowerCase().includes(search) ||
+                       r.email.toLowerCase().includes(search) ||
+                       r.phone.includes(search);
+            }));
+        });
+        
+        // Charger les réservations depuis l'API
+        async function loadReservations() {
+            try {
+                const response = await fetch('http://localhost:3000/api/reservations');
+                const data = await response.json();
+                
+                if (data.success) {
+                    reservations = data.reservations;
+                    displayReservations(reservations);
+                    updateStats(reservations);
+                } else {
+                    throw new Error('Erreur lors du chargement');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('reservationsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <h2 class="empty-title">Erreur de connexion</h2>
+                        <p class="empty-text">Impossible de charger les réservations. Vérifiez que le serveur est démarré.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Afficher les réservations
+        function displayReservations(data) {
+            const container = document.getElementById('reservationsContainer');
+            
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h2 class="empty-title">Aucune réservation</h2>
+                        <p class="empty-text">Les réservations apparaîtront ici dès qu'elles seront effectuées.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="reservations-grid">
+                    ${data.map(reservation => `
+                        <div class="reservation-card">
+                            <div class="reservation-header">
+                                <div>
+                                    <div class="child-name">
+                                        ${reservation.childFirstName} ${reservation.childLastName}
+                                    </div>
+                                    <div class="reservation-id">ID: ${reservation.id}</div>
+                                </div>
+                                <button class="delete-btn" onclick="deleteReservation('${reservation.id}')">
+                                    🗑️ Supprimer
+                                </button>
+                            </div>
+                            
+                            <div class="reservation-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">👤 Âge</span>
+                                    <span class="detail-value">${reservation.childAge} ans</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">👨‍👩‍👧 Responsable</span>
+                                    <span class="detail-value">${reservation.parentName}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">📧 Email</span>
+                                    <span class="detail-value">${reservation.email}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">📱 Téléphone</span>
+                                    <span class="detail-value">${reservation.phone}</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <span class="detail-label">📅 Dates sélectionnées</span>
+                                <div class="dates-list">
+                                    ${reservation.dates.map(date => `
+                                        <span class="date-badge">${date}</span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            <div class="timestamp">
+                                ⏰ ${new Date(reservation.timestamp).toLocaleString('fr-FR', {
+                                    dateStyle: 'full',
+                                    timeStyle: 'short'
+                                })}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // Mettre à jour les statistiques
+        function updateStats(data) {
+            document.getElementById('totalReservations').textContent = data.length;
+            document.getElementById('totalChildren').textContent = data.length;
+            
+            const today = new Date().toDateString();
+            const todayCount = data.filter(r => 
+                new Date(r.timestamp).toDateString() === today
+            ).length;
+            document.getElementById('todayReservations').textContent = todayCount;
+        }
+        
+        // Supprimer une réservation
+        async function deleteReservation(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/reservation/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ Réservation supprimée avec succès');
+                    loadReservations();
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors de la suppression');
+            }
+        }
+        
+        // Exporter en CSV
+        function exportCSV() {
+            if (reservations.length === 0) {
+                alert('Aucune réservation à exporter');
+                return;
+            }
+            
+            const headers = ['ID', 'Date', 'Prénom', 'Nom', 'Âge', 'Responsable', 'Email', 'Téléphone', 'Dates'];
+            const rows = reservations.map(r => [
+                r.id,
+                new Date(r.timestamp).toLocaleString('fr-FR'),
+                r.childFirstName,
+                r.childLastName,
+                r.childAge,
+                r.parentName,
+                r.email,
+                r.phone,
+                r.dates.join(' | ')
+            ]);
+            
+            const csv = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+            ].join('\n');
+            
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `reservations-colo-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+        
+        // Auto-refresh toutes les 30 secondes
+        setInterval(loadReservations, 30000);
+    </script>
+</body>
+</html>
